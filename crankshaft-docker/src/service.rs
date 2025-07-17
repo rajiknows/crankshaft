@@ -8,6 +8,8 @@ use std::os::windows::process::ExitStatusExt as _;
 use std::path::PathBuf;
 use std::process::ExitStatus;
 use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use bollard::Docker;
 use bollard::container::LogOutput;
@@ -114,10 +116,9 @@ impl Service {
             let tasks = self
                 .client
                 .list_tasks(Some(ListTasksOptions {
-                    filters: Some(HashMap::from_iter([(
-                        String::from("service"),
-                        vec![self.id.to_owned()],
-                    )])),
+                    filters: Some(HashMap::from_iter([(String::from("service"), vec![
+                        self.id.to_owned(),
+                    ])])),
                 }))
                 .await
                 .map_err(Error::Docker)?;
@@ -155,6 +156,7 @@ impl Service {
                         id = self.id
                     );
 
+<<<<<<< HEAD
                     send_event!(
                         &event_sender,
                         &task_id,
@@ -212,6 +214,7 @@ impl Service {
                         let output = result.map_err(Error::Docker)?;
                         match output {
                             LogOutput::StdOut { message } => {
+<<<<<<< HEAD
                                 send_event!(
                                     &event_sender,
                                     &task_id,
@@ -307,6 +310,7 @@ impl Service {
                         id = self.id
                     );
 
+<<<<<<< HEAD
                     send_event!(
                         &event_sender,
                         &task_id,
@@ -329,6 +333,7 @@ impl Service {
                 | Some(TaskState::REJECTED)
                 | Some(TaskState::ORPHANED)
                 | Some(TaskState::REMOVE) => {
+<<<<<<< HEAD
                     send_event!(
                         &event_sender,
                         &task_id,
@@ -374,4 +379,11 @@ impl Service {
 
         Ok(())
     }
+}
+
+fn now_millis() -> i64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("System time before UNIX epoch")
+        .as_millis() as i64
 }

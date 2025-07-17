@@ -6,6 +6,8 @@
 use std::process::ExitStatus;
 use std::sync::Arc;
 use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use anyhow::Context as _;
 use anyhow::Result;
@@ -126,6 +128,7 @@ impl crate::Backend for Backend {
                 })
                 .transpose()?;
 
+<<<<<<< HEAD
             let task_name = task.name().unwrap_or_default().to_string();
 
             for execution in task.executions {
@@ -180,6 +183,17 @@ impl crate::Backend for Backend {
                     EventType::TaskStarted,
                     "task `{task_name}` has started"
                 );
+
+                if let Some(event_sender) = event_sender.clone() {
+                    event_sender
+                        .send(Event {
+                            task_id: task.name().unwrap().to_string(),
+                            event_type: EventType::TaskStarted as i32,
+                            timestamp: now_millis() as i64,
+                            message: "Task started".to_string(),
+                        })
+                        .expect("Failed to send event started message from generic");
+                };
 
                 // Monitoring the output.
                 match job_id_regex {
@@ -248,4 +262,11 @@ impl crate::Backend for Backend {
         }
         .boxed())
     }
+}
+
+fn now_millis() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("Time went backwards")
+        .as_millis() as u64
 }
